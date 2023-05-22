@@ -78,7 +78,8 @@ spec:
               value: ""
             - name: MULTISITE
               value: "yes"
-            - name: USE_REDIS
+            - name: USE_
+            
               value: "yes"
             - name: REDIS_HOST
               value: "svc-bunkerweb-redis.default.svc.cluster.local"
@@ -193,64 +194,6 @@ spec:
       containers:
         - name: bunkerweb-db
           image: mysql:8.0
-          imagePullPolicy: Always
-          env:
-            - name: MYSQL_RANDOM_ROOT_PASSWORD
-              value: "yes"
-            - name: "MYSQL_DATABASE"
-              value: "db"
-            - name: "MYSQL_USER"
-              value: "bunkerweb"
-            - name: "MYSQL_PASSWORD"
-              value: "changeme"
-          volumeMounts:
-            - mountPath: "/var/lib/mysql"
-              name: vol-db
-      volumes:
-        - name: vol-db
-          persistentVolumeClaim:
-            claimName: pvc-bunkerweb
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: bunkerweb-redis
-spec:
-  replicas: 1
-  strategy:
-    type: Recreate
-  selector:
-    matchLabels:
-      app: bunkerweb-redis
-  template:
-    metadata:
-      labels:
-        app: bunkerweb-redis
-    spec:
-      containers:
-        - name: bunkerweb-redis
-          image: redis:7-alpine
-          imagePullPolicy: Always
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: bunkerweb-db
-spec:
-  replicas: 1
-  strategy:
-    type: Recreate
-  selector:
-    matchLabels:
-      app: bunkerweb-db
-  template:
-    metadata:
-      labels:
-        app: bunkerweb-db
-    spec:
-      containers:
-        - name: bunkerweb-db
-          image: mariadb:10.10
           imagePullPolicy: Always
           env:
             - name: MYSQL_RANDOM_ROOT_PASSWORD
