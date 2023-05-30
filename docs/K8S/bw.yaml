@@ -68,7 +68,7 @@ spec:
             # replace with your DNS resolvers
             # e.g. : kube-dns.kube-system.svc.cluster.local
             - name: DNS_RESOLVERS
-              value: "coredns.kube-system.svc.cluster.local"
+              value: "kube-dns.kube-system.svc.cluster.local"
             - name: USE_API
               value: "yes"
             # 10.0.0.0/8 is the cluster internal subnet
@@ -124,7 +124,7 @@ spec:
             - name: KUBERNETES_MODE
               value: "yes"
             - name: "DATABASE_URI"
-              value: "postgresql://bunkerweb:changeme@svc-bunkerweb-db:5432/db"
+              value: "postgresql://bunkerweb:testor@svc-bunkerweb-db:5432/db"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -151,7 +151,7 @@ spec:
             - name: KUBERNETES_MODE
               value: "yes"
             - name: "DATABASE_URI"
-              value: "postgresql://bunkerweb:changeme@svc-bunkerweb-db:5432/db"
+              value: "postgresql://bunkerweb:testor@svc-bunkerweb-db:5432/db"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -200,7 +200,7 @@ spec:
             - name: "POSTGRES_USER"
               value: "bunkerweb"
             - name: "POSTGRES_PASSWORD"
-              value: "changeme"
+              value: "testor"
             - name: "PGDATA"
               value: "/var/lib/postgresql/data/pgdata"
           volumeMounts:
@@ -234,15 +234,56 @@ spec:
           imagePullPolicy: Always
           env:
             - name: ADMIN_USERNAME
-              value: "changeme"
+              value: "admin"
             - name: "ADMIN_PASSWORD"
-              value: "changeme"
+              value: "4ltestorO!"
             - name: "ABSOLUTE_URI"
-              value: "http://www.example.com/changeme/"
+              value: "http://bw.lpflov.nodes.c2.gra.k8s.ovh.net/admin/"
             - name: KUBERNETES_MODE
               value: "YES"
             - name: "DATABASE_URI"
-              value: "postgresql://bunkerweb:changeme@svc-bunkerweb-db:5432/db"
+              value: "postgresql://bunkerweb:testor@svc-bunkerweb-db:5432/db"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world-deployment
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hello-world
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      containers:
+        - name: hello-world
+          image: bhargavshah86/kube-test:v0.1
+          ports:
+          - containerPort: 80
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: "250m"
+            requests:
+              memory: 128Mi
+              cpu: "80m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world
+spec:
+  selector:
+    app: hello-world
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -311,18 +352,28 @@ kind: Ingress
 metadata:
   name: ingress
   annotations:
-    bunkerweb.io/www.example.com_USE_UI: "yes"
-    bunkerweb.io/www.example.com_REVERSE_PROXY_HEADERS_1: "X-Script-Name /changeme"
-    bunkerweb.io/www.example.com_INTERCEPTED_ERROR_CODES: "400 404 405 413 429 500 501 502 503 504"
+    bunkerweb.io/bw.lpflov.nodes.c2.gra.k8s.ovh.net_USE_UI: "yes"
+    bunkerweb.io/bw.lpflov.nodes.c2.gra.k8s.ovh.net_REVERSE_PROXY_HEADERS_1: "X-Script-Name /admin"
+    bunkerweb.io/bw.lpflov.nodes.c2.gra.k8s.ovh.net_INTERCEPTED_ERROR_CODES: "400 404 405 413 429 500 501 502 503 504"
 spec:
   rules:
-    - host: www.example.com
+    - host: bw.lpflov.nodes.c2.gra.k8s.ovh.net
       http:
         paths:
-          - path: /changeme/
+          - path: /admin/
             pathType: Prefix
             backend:
               service:
                 name: svc-bunkerweb-ui
                 port:
                   number: 7000
+    - host: hw.lpflov.nodes.c2.gra.k8s.ovh.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: hello-world
+                port:
+                  number: 8080
