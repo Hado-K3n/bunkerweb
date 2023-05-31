@@ -82,6 +82,14 @@ spec:
               value: "yes"
             - name: REDIS_HOST
               value: "svc-bunkerweb-redis.default.svc.cluster.local"
+            - name: USE_PROXY_PROTOCOL
+              value: "yes"
+            - name: USE_REAL_IP
+              value: "yes"
+            - name: REAL_IP_FROM
+              value: "10.0.0.0/8"
+            - name: REAL_IP_HEADER
+              value: "proxy_protocol"
           livenessProbe:
             exec:
               command:
@@ -238,20 +246,36 @@ spec:
             - name: "ADMIN_PASSWORD"
               value: "4ltestorO!"
             - name: "ABSOLUTE_URI"
-              value: "http://bw.lpflov.nodes.c2.gra.k8s.ovh.net/admin/"
+              value: "http://ip-152-228-251-184.gra.lb.ovh.net/admin/"
             - name: KUBERNETES_MODE
               value: "YES"
             - name: "DATABASE_URI"
               value: "postgresql://bunkerweb:testor@svc-bunkerweb-db:5432/db"
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world
+  labels:
+    app: hello-world
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: hello-world
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-world-deployment
+  labels:
+    app: hello-world
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app: hello-world
@@ -261,29 +285,10 @@ spec:
         app: hello-world
     spec:
       containers:
-        - name: hello-world
-          image: bhargavshah86/kube-test:v0.1
-          ports:
-          - containerPort: 80
-          resources:
-            limits:
-              memory: 256Mi
-              cpu: "250m"
-            requests:
-              memory: 128Mi
-              cpu: "80m"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: hello-world
-spec:
-  selector:
-    app: hello-world
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 80
+      - name: hello-world
+        image: ovhplatform/hello:1.1
+        ports:
+        - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -352,12 +357,12 @@ kind: Ingress
 metadata:
   name: ingress
   annotations:
-    bunkerweb.io/bw.lpflov.nodes.c2.gra.k8s.ovh.net_USE_UI: "yes"
-    bunkerweb.io/bw.lpflov.nodes.c2.gra.k8s.ovh.net_REVERSE_PROXY_HEADERS_1: "X-Script-Name /admin"
-    bunkerweb.io/bw.lpflov.nodes.c2.gra.k8s.ovh.net_INTERCEPTED_ERROR_CODES: "400 404 405 413 429 500 501 502 503 504"
+    bunkerweb.io/ip-152-228-251-184.gra.lb.ovh.net_USE_UI: "yes"
+    bunkerweb.io/ip-152-228-251-184.gra.lb.ovh.net_REVERSE_PROXY_HEADERS_1: "X-Script-Name /admin"
+    bunkerweb.io/ip-152-228-251-184.gra.lb.ovh.net_INTERCEPTED_ERROR_CODES: "400 404 405 413 429 500 501 502 503 504"
 spec:
   rules:
-    - host: bw.lpflov.nodes.c2.gra.k8s.ovh.net
+    - host: ip-152-228-251-184.gra.lb.ovh.net
       http:
         paths:
           - path: /admin/
@@ -367,9 +372,6 @@ spec:
                 name: svc-bunkerweb-ui
                 port:
                   number: 7000
-    - host: hw.lpflov.nodes.c2.gra.k8s.ovh.net
-      http:
-        paths:
           - path: /
             pathType: Prefix
             backend:
@@ -377,3 +379,24 @@ spec:
                 name: hello-world
                 port:
                   number: 8080
+---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: lb-bw
+#  annotations:
+#    service.beta.kubernetes.io/ovh-loadbalancer-proxy-protocol: "v2"
+#spec:
+#  type: LoadBalancer
+#  externalTrafficPolicy: Local
+#  selector:
+#    app: bunkerweb
+#  ports:
+#    - port: 80
+#      targetPort: 8080
+#      protocol: TCP
+#      name: http
+#    - port: 443
+#      targetPort: 8443
+#      protocol: TCP
+#      name: https

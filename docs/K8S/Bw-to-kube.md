@@ -89,16 +89,32 @@ It's important to note that your URL needs to end with a "/"
 Also important to note, the admin password must contain at least 8 characters, including at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (#@?!$%^&*-).
 
 ### Install Hello-world 
-We can install an Hello-world deployment for testing purposes
+We can install an Hello-world deployment with a type LoadBalancer for testing purposes.
 ```
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world
+  labels:
+    app: hello-world
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: hello-world
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-world-deployment
+  labels:
+    app: hello-world
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app: hello-world
@@ -108,29 +124,10 @@ spec:
         app: hello-world
     spec:
       containers:
-        - name: hello-world
-          image: bhargavshah86/kube-test:v0.1
-          ports:
-          - containerPort: 80
-          resources:
-            limits:
-              memory: 256Mi
-              cpu: "250m"
-            requests:
-              memory: 128Mi
-              cpu: "80m"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: hello-world
-spec:
-  selector:
-    app: hello-world
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 80
+      - name: hello-world
+        image: ovhplatform/hello:1.1
+        ports:
+        - containerPort: 80
 ```
 
 
@@ -195,3 +192,16 @@ spec:
                   number: 8080
 ```
 
+### Find out your LoadBalancer IP
+
+```
+➜  K8S git:(master) ✗ kubectl get svc -o wide   
+NAME                  TYPE           CLUSTER-IP     EXTERNAL-IP    PORT(S)        AGE     SELECTOR
+hello-world           LoadBalancer   10.3.225.215   37.59.19.109   80:32178/TCP   4m16s   app=hello-world
+kubernetes            ClusterIP      10.3.0.1       <none>         443/TCP        138m    <none>
+svc-bunkerweb         ClusterIP      None           <none>         <none>         4m15s   app=bunkerweb
+svc-bunkerweb-db      ClusterIP      10.3.15.208    <none>         5432/TCP       4m15s   app=bunkerweb-db
+svc-bunkerweb-redis   ClusterIP      10.3.164.194   <none>         6379/TCP       4m15s   app=bunkerweb-redis
+svc-bunkerweb-ui      ClusterIP      10.3.108.215   <none>         7000/TCP       4m14s   app=bunkerweb-ui
+
+```
