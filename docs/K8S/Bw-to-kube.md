@@ -261,12 +261,12 @@ svc-bunkerweb-ui      ClusterIP      10.3.193.146   <none>                      
 
 ## STEP 6 - Try to reach your instances 
 
-- BunkerWeb should be reachable through this path: ip-152-228-251-184.gra.lb.ovh.net/admin/
+- BunkerWeb should be reachable through this path: http://ip-152-228-251-184.gra.lb.ovh.net/admin/
 
 
 ![BunkerWeb UI interface](./images/BW-cap.png)
 
-- OVH Hello-World application should be reachable through this path: ip-152-228-251-184.gra.lb.ovh.net
+- OVH Hello-World application should be reachable through this path: http://ip-152-228-251-184.gra.lb.ovh.net
 
 
 ![OVH Hello-world ](./images/OVH-cap.png)
