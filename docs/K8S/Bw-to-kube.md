@@ -105,7 +105,7 @@ e.g.:
             - name: "POSTGRES_PASSWORD"
               value: "testor"
 ```
-Don't forget to modify it as well in your database URI for the scheduler, the controller and the UI deployments. 
+Don't forget to modify it as well in your **DATABASE_URI** variable for the scheduler, the controller and the UI deployments. 
 
 From
 ```
