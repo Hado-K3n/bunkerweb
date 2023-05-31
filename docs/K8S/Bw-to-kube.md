@@ -1,7 +1,18 @@
 # Install Bunkerweb on your managed K8S cluster
 ## Setup your managed kubernetes cluster on OVH
+![Step 1](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Managed-cluster-1.png)
 
+![Step 2](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Managed-cluster-2.png)
 
+![Step 3](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Managed-cluster-3.png)
+
+![Step 4](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Managed-cluster-4.png)
+
+![Step 5](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Managed-cluster-5.png)
+
+![Step 6](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Managed-cluster-6.png)
+
+![Step 7](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Managed-cluster-7.png)
 ## Bunkerweb installation 
 
 Bunkerweb can easily be installed from the yaml file you would find on [Bunkerity's Github](https://github.com/bunkerity/bunkerweb/tree/master/misc/integrations) under the same prefix __"K8S.*.yaml"__.
