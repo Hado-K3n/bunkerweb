@@ -1,27 +1,34 @@
 # Install Bunkerweb on your managed K8S cluster
-## Setup your managed kubernetes cluster on OVH
-![Step 1](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Managed-cluster-1.png)
 
-![Step 2](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Managed-cluster-2.png)
+## Preview of the final infrastructure 
+![Step 7](./images/schema-LB-ingress.png
+)
 
-![Step 3](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Managed-cluster-3.png)
+## STEP 1 - Setup your managed kubernetes cluster on OVH
+![Step 1](./images/Managed-cluster-1.png)
 
-![Step 4](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Managed-cluster-4.png)
+![Step 2](./images/Managed-cluster-2.png)
 
-![Step 5](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Managed-cluster-5.png)
+![Step 3](./images/Managed-cluster-3.png)
 
-![Step 6](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Managed-cluster-6.png)
+![Step 4](./images/Managed-cluster-4.png)
 
-![Step 7](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Managed-cluster-7.png)
-## Bunkerweb installation 
+![Step 5](./images/Managed-cluster-5.png)
+
+![Step 6](./images/Managed-cluster-6.png)
+
+![Step 7](./images/Managed-cluster-7.png)
+##  STEP 2 -  Bunkerweb installation 
 
 Bunkerweb can easily be installed from the yaml file you would find on [Bunkerity's Github](https://github.com/bunkerity/bunkerweb/tree/master/misc/integrations) under the same prefix __"K8S.*.yaml"__.
 
-![Bunkerweb K8S repository](https://github.com/Hado-K3n/bunkerweb/tree/master/docs/K8S/images/Github-repo.png )
+Documentation for BunkerWeb is regularly updated to fit the latest version, you can find it [here](https://docs.bunkerweb.io/).
+
+![Bunkerweb K8S repository](./images/Github-repo.png )
 
 Once your managed kubernetes cluster is in place, you need to personnalize your downloaded yaml file to fit your specifications.
 
-### Specify the DNS for your cluster
+###  STEP 2.1 - Specify the DNS for your cluster
 
 ```
           env:
@@ -32,8 +39,19 @@ Once your managed kubernetes cluster is in place, you need to personnalize your 
             - name: DNS_RESOLVERS
               value: "kube-dns.kube-system.svc.cluster.local"
 ```
+###  STEP 2.2 - Specify the environment variables needed for the proxy setup
 
-### Change the default values 
+```
+            - name: USE_PROXY_PROTOCOL
+              value: "yes"
+            - name: USE_REAL_IP
+              value: "yes"
+            - name: REAL_IP_FROM
+              value: "10.0.0.0/8"
+            - name: REAL_IP_HEADER
+              value: "proxy_protocol"
+```
+###  STEP 2.3 -  Change the default values 
 
 You should change the default database password. For example "changeme" to "testor":
 
@@ -56,7 +74,7 @@ to
               value: "postgresql://bunkerweb:testor@svc-bunkerweb-db:5432/db"
 ```
 
-### Change the default UI values
+###  STEP 2.4 -  Change the default UI values
 
 From
 ```
@@ -89,7 +107,7 @@ to
             - name: "ADMIN_PASSWORD"
               value: "4ltestorO!"
             - name: "ABSOLUTE_URI"
-              value: "http://bw.lpflov.nodes.c2.gra.k8s.ovh.net/admin/" # specify your URL
+              value: "http://ip-152-228-251-184.gra.lb.ovh.net/admin/" # specify your LB URL
             - name: KUBERNETES_MODE
               value: "YES"
             - name: "DATABASE_URI"
@@ -99,8 +117,8 @@ It's important to note that your URL needs to end with a "/"
 
 Also important to note, the admin password must contain at least 8 characters, including at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (#@?!$%^&*-).
 
-### Install Hello-world 
-We can install an Hello-world deployment with a type LoadBalancer for testing purposes.
+## STEP 3 - Install an application for testing purposes
+We can install an Hello-world deployment.
 ```
 apiVersion: v1
 kind: Service
@@ -109,9 +127,9 @@ metadata:
   labels:
     app: hello-world
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
-  - port: 80
+  - port: 8080
     targetPort: 80
     protocol: TCP
     name: http
@@ -142,7 +160,7 @@ spec:
 ```
 
 
-### Change the default ingress values
+## STEP 4 -  Change the default ingress values
 
 From
 ```
@@ -176,12 +194,12 @@ kind: Ingress
 metadata:
   name: ingress
   annotations:
-    bunkerweb.io/bw.lpflov.nodes.c2.gra.k8s.ovh.net_USE_UI: "yes"
-    bunkerweb.io/bw.lpflov.nodes.c2.gra.k8s.ovh.net_REVERSE_PROXY_HEADERS_1: "X-Script-Name /admin"
-    bunkerweb.io/bw.lpflov.nodes.c2.gra.k8s.ovh.net_INTERCEPTED_ERROR_CODES: "400 404 405 413 429 500 501 502 503 504"
+    bunkerweb.io/ip-152-228-251-184.gra.lb.ovh.net_USE_UI: "yes"
+    bunkerweb.io/ip-152-228-251-184.gra.lb.ovh.net_REVERSE_PROXY_HEADERS_1: "X-Script-Name /admin"
+    bunkerweb.io/ip-152-228-251-184.gra.lb.ovh.net_INTERCEPTED_ERROR_CODES: "400 404 405 413 429 500 501 502 503 504"
 spec:
   rules:
-    - host: bw.lpflov.nodes.c2.gra.k8s.ovh.net
+    - host: ip-152-228-251-184.gra.lb.ovh.net
       http:
         paths:
           - path: /admin/
@@ -191,9 +209,6 @@ spec:
                 name: svc-bunkerweb-ui
                 port:
                   number: 7000
-    - host: hw.lpflov.nodes.c2.gra.k8s.ovh.net
-      http:
-        paths:
           - path: /
             pathType: Prefix
             backend:
@@ -203,16 +218,60 @@ spec:
                   number: 8080
 ```
 
-### Find out your LoadBalancer IP
+## STEP 5 - LoadBalancer with OVH
+
+### STEP 5.1 - Create your service type LoadBalancer
 
 ```
-➜  K8S git:(master) ✗ kubectl get svc -o wide   
-NAME                  TYPE           CLUSTER-IP     EXTERNAL-IP    PORT(S)        AGE     SELECTOR
-hello-world           LoadBalancer   10.3.225.215   37.59.19.109   80:32178/TCP   4m16s   app=hello-world
-kubernetes            ClusterIP      10.3.0.1       <none>         443/TCP        138m    <none>
-svc-bunkerweb         ClusterIP      None           <none>         <none>         4m15s   app=bunkerweb
-svc-bunkerweb-db      ClusterIP      10.3.15.208    <none>         5432/TCP       4m15s   app=bunkerweb-db
-svc-bunkerweb-redis   ClusterIP      10.3.164.194   <none>         6379/TCP       4m15s   app=bunkerweb-redis
-svc-bunkerweb-ui      ClusterIP      10.3.108.215   <none>         7000/TCP       4m14s   app=bunkerweb-ui
+apiVersion: v1
+kind: Service
+metadata:
+  name: lb-bw
+  annotations:
+    service.beta.kubernetes.io/ovh-loadbalancer-proxy-protocol: "v2"
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: bunkerweb
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+    - port: 443
+      targetPort: 8443
+      protocol: TCP
+      name: https
+```
+### STEP 5.2 - Find out your LoadBalancer IP
+ Type  ```kubectl get service``` and catch your LoadBalancer IP  in the EXTERNAL-IP column. 
+```
+➜  K8S git:(master) ✗ kubectl get service        
+NAME                  TYPE           CLUSTER-IP     EXTERNAL-IP                         PORT(S)                      AGE
+hello-world           ClusterIP      10.3.58.37     <none>                              8080/TCP                     164m
+kubernetes            ClusterIP      10.3.0.1       <none>                              443/TCP                      24h
+lb-bw                 LoadBalancer   10.3.125.204   ip-152-228-251-184.gra.lb.ovh.net   80:31880/TCP,443:30468/TCP   3h14m
+svc-bunkerweb         ClusterIP      None           <none>                              <none>                       164m
+svc-bunkerweb-db      ClusterIP      10.3.167.212   <none>                              5432/TCP                     164m
+svc-bunkerweb-redis   ClusterIP      10.3.27.181    <none>                              6379/TCP                     164m
+svc-bunkerweb-ui      ClusterIP      10.3.193.146   <none>                              7000/TCP                     164m
 
 ```
+
+## STEP 6 - Try to reach your instances 
+
+- BunkerWeb should be reachable through this path: ip-152-228-251-184.gra.lb.ovh.net/admin/
+
+
+![BunkerWeb UI interface](./images/BW-cap.png)
+
+- OVH Hello-World application should be reachable through this path: ip-152-228-251-184.gra.lb.ovh.net
+
+
+![OVH Hello-world ](./images/OVH-cap.png)
+
+As specified in the Ingress you should reach your destination.
+
+**Your application is now Bunkerized and protected from malevolent outsiders !**
+
