@@ -164,7 +164,6 @@ Also important to note, the admin password must contain at least 8 characters, i
 ## STEP 3 - Install an application for testing purposes
 We can install an Hello-world deployment.
 
-You can find OVH documentation on the LoadBalancer [here](https://help.ovhcloud.com/csm/en-public-cloud-kubernetes-using-lb?id=kb_article_view&sysparm_article=KB0050019).
 ```
 apiVersion: v1
 kind: Service
@@ -267,6 +266,8 @@ spec:
 ## STEP 5 - LoadBalancer with OVH
 
 ### STEP 5.1 - Create your service type LoadBalancer
+
+You can find OVH documentation on the LoadBalancer [here](https://help.ovhcloud.com/csm/en-public-cloud-kubernetes-using-lb?id=kb_article_view&sysparm_article=KB0050019).
 
 ```
 apiVersion: v1
