@@ -5,19 +5,63 @@
 )
 
 ## STEP 1 - Setup your managed kubernetes cluster on OVH
+### STEP 1.1 - Location
+Select the region of your choice.
 ![Step 1](./images/Managed-cluster-1.png)
 
+### STEP 1.2 - Version
+Select the Kubernetes version. (Currently, it is the version 1.26)
 ![Step 2](./images/Managed-cluster-2.png)
 
+### STEP 1.3 - Private Network
+Select a private network from your drop-down list.
 ![Step 3](./images/Managed-cluster-3.png)
 
+### STEP 1.4 - Node Type
+Select the node type based on the needs of your infrastructure. 
+
+Here we are choosing a type Discovery, because we aim for a little infrastructure.
 ![Step 4](./images/Managed-cluster-4.png)
+### STEP 1.5 - Pool Size
+Select the size of the node pool to fit your needs.
 
 ![Step 5](./images/Managed-cluster-5.png)
+### STEP 1.6 - Billing
+Select the billing either by month or by the hour, depending if it's for testing purposes or for production.
 
 ![Step 6](./images/Managed-cluster-6.png)
+### STEP 1.7 - Name
+Choose a name for your Cluster.
 
 ![Step 7](./images/Managed-cluster-7.png)
+
+### STEP 1.8 - Kubeconfig file
+
+Now you need to go to your newly created cluster and download the **kubeconfig** file to be able to access your cluster
+![Step 8](./images/Kubeconfig.png)
+
+### STEP 1.9 - Copy your Kubeconfig file and export
+
+From the command line you need to copy your kubeconfig file in the proper repository.
+```
+ K8S git:(master) ✗ cp /Users/CURRENTUSER/Downloads/kubeconfig.yml /Users/CURRENTUSER/.kube/kubeconfig.yml
+```
+And then you need to export the kubeconfig file
+
+``` export KUBECONFIG=/Users/CURRENTUSER/.kube/kubeconfig.yml ```
+
+Finaly, you can type ``` kubectl cluster-info``` to verify your connexion with the managed cluster.
+
+You should get a result like this : 
+```
+➜  K8S git:(master) ✗ kubectl cluster-info
+Kubernetes control plane is running at https://u6nlld.c2.gra.k8s.ovh.net
+CoreDNS is running at https://u6nlld.c2.gra.k8s.ovh.net/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+Metrics-server is running at https://u6nlld.c2.gra.k8s.ovh.net/api/v1/namespaces/kube-system/services/https:metrics-server:/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+```
+
 ##  STEP 2 -  Bunkerweb installation 
 
 Bunkerweb can easily be installed from the yaml file you would find on [Bunkerity's Github](https://github.com/bunkerity/bunkerweb/tree/master/misc/integrations) under the same prefix __"K8S.*.yaml"__.
