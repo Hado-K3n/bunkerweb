@@ -56,7 +56,7 @@ Once your managed kubernetes cluster is in place, you need to personnalize your 
 You should change the default database password. For example "changeme" to "testor":
 
 
-e.g:
+e.g.:
 ```
             - name: "POSTGRES_PASSWORD"
               value: "testor"
