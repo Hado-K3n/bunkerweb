@@ -24,7 +24,7 @@ Bunkerweb can easily be installed from the yaml file you would find on [Bunkerit
 
 Documentation for BunkerWeb is regularly updated to fit the latest version, you can find it [here](https://docs.bunkerweb.io/).
 
-![Bunkerweb K8S repository](./images/Github-repo.png )
+![Bunkerweb K8S repository](./images/Github.png )
 
 Once your managed kubernetes cluster is in place, you need to personnalize your downloaded yaml file to fit your specifications.
 
