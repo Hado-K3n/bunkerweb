@@ -37,7 +37,7 @@ Choose a name for your Cluster.
 
 ### STEP 1.8 - Kubeconfig file
 
-Now you need to go to your newly created cluster and download the **kubeconfig** file to be able to access your cluster
+Now you need to go to your newly created cluster in the OVH interface and download the **kubeconfig** file to be able to access your cluster
 ![Step 8](./images/Kubeconfig.png)
 
 ### STEP 1.9 - Copy your Kubeconfig file and export
