@@ -27,7 +27,7 @@ Select the size of the node pool to fit your needs.
 
 ![Step 5](./images/Managed-cluster-5.png)
 ### STEP 1.6 - Billing
-Select the billing either by month or by the hour, depending if it's for testing purposes or for production.
+Select the billing either by the month or by the hour, depending if it's for testing purposes or for production.
 
 ![Step 6](./images/Managed-cluster-6.png)
 ### STEP 1.7 - Name
